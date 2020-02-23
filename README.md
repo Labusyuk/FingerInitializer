@@ -1,1 +1,1 @@
-"# FingerInitializer" 
+"#Progress [############     ] %77 completed" 
