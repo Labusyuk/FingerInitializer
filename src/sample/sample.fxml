@@ -47,7 +47,7 @@
         <content>
             <AnchorPane>
                <children>
-                  <Canvas fx:id="canvas" height="643.0" layoutX="14.0" layoutY="1.0" onMouseClicked="#canvasPaint" onMouseDragged="#canvasPaint" onMouseReleased="#canvasPaintMouseReleased" width="584.0" AnchorPane.rightAnchor="-14.0" />
+                  <Canvas fx:id="canvas" height="643.0" layoutX="14.0" layoutY="1.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="584.0" AnchorPane.rightAnchor="-14.0" />
                </children>
             </AnchorPane>
         </content>
@@ -63,9 +63,9 @@
       </AnchorPane>
       <ScrollPane layoutX="646.0" layoutY="97.0" prefHeight="328.0" prefWidth="103.0" AnchorPane.rightAnchor="0.0">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="429.0" prefWidth="87.0">
+          <AnchorPane>
                <children>
-                  <Canvas fx:id="canvasLayers" height="431.0" width="88.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Canvas fx:id="canvasLayers" height="450.0" onMouseClicked="#CanvasLayersOnMouseClicked" width="87.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
         </content>

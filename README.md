@@ -1,1 +1,1 @@
-"#Progress [############     ] %77 completed" 
+"#JavaFX Application" 
