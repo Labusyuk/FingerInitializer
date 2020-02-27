@@ -16,7 +16,7 @@
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#49ffe4" height="25.0" layoutY="425.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-10.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1ffbff" height="25.0" layoutY="25.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Шлях до масок:________Назва файлу_____;  | ________________Шлях до файлу______________" wrappingWidth="574.0" />
+      <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Шлях до масок: оберіть шлях до масок" wrappingWidth="574.0" />
       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
             <Menu mnemonicParsing="false" text="Файл">
@@ -42,23 +42,24 @@
             <ListView fx:id="listViewFileList" layoutY="120.0" prefHeight="240.0" prefWidth="133.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="134.0" />
          </children></AnchorPane>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <Text fx:id="textRootPath" layoutX="20.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Корінний шлях ________Назва файлу_____;  | ________________Шлях до файлу______________" wrappingWidth="476.33984375" />
-      <ScrollPane layoutX="134.0" layoutY="97.0" prefHeight="328.0" prefWidth="512.0" AnchorPane.leftAnchor="134.0" AnchorPane.rightAnchor="104.0">
+      <Text fx:id="textRootPath" layoutX="20.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Корінний шлях: оберіть директорію" wrappingWidth="476.33984375" />
+      <ScrollPane fx:id="paneCanvas" layoutX="134.0" layoutY="97.0" prefHeight="328.0" prefWidth="512.0" AnchorPane.leftAnchor="134.0" AnchorPane.rightAnchor="104.0">
         <content>
             <AnchorPane>
                <children>
-                  <Canvas fx:id="canvas" height="643.0" layoutX="14.0" layoutY="1.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="584.0" AnchorPane.rightAnchor="-14.0" />
+                  <Canvas fx:id="canvas" disable="true" height="643.0" layoutX="14.0" layoutY="1.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="584.0" AnchorPane.rightAnchor="-14.0" />
                </children>
             </AnchorPane>
         </content>
       </ScrollPane>
       <Button layoutX="666.0" layoutY="26.0" minHeight="22.0" mnemonicParsing="false" onAction="#chooseRoot" prefHeight="22.0" prefWidth="94.0" text="Змінити" />
-      <Button layoutX="666.0" layoutY="425.0" minHeight="23.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="94.0" text="Змінити" />
-      <Button layoutX="571.0" layoutY="425.0" minHeight="23.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="94.0" text="Зберегти" />
+      <Button fx:id="buttonChangeMaskRoot" layoutX="666.0" layoutY="425.0" minHeight="23.0" mnemonicParsing="false" onAction="#chooseMaskRoot" prefHeight="23.0" prefWidth="94.0" text="Змінити" />
       <AnchorPane layoutX="133.0" layoutY="51.0" prefHeight="46.0" prefWidth="616.0" AnchorPane.leftAnchor="133.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
          <children>
             <Slider fx:id="sliderStroke" layoutY="7.0" showTickLabels="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="477.0" AnchorPane.topAnchor="7.0" />
-            <Button fx:id="saveAndNext" layoutX="441.0" layoutY="5.0" mnemonicParsing="false" onAction="#drawLayer" prefHeight="33.0" prefWidth="176.0" text="Зберегти та перейти далі" />
+            <Button fx:id="saveAndNext" disable="true" layoutX="458.0" layoutY="5.0" mnemonicParsing="false" onAction="#saveMaskandStep" prefHeight="33.0" prefWidth="159.0" text="Зберегти та перейти далі" />
+            <Button fx:id="saveFragment" disable="true" layoutX="160.0" layoutY="5.0" mnemonicParsing="false" onAction="#saveFragment" prefHeight="33.0" prefWidth="220.0" text="Зберегти маску видимого фрагменту" />
+            <Button fx:id="save" disable="true" layoutX="382.0" layoutY="5.0" mnemonicParsing="false" onAction="#save" prefHeight="33.0" prefWidth="74.0" text="Зберегти" />
          </children>
       </AnchorPane>
       <ScrollPane layoutX="646.0" layoutY="97.0" prefHeight="328.0" prefWidth="103.0" AnchorPane.rightAnchor="0.0">
