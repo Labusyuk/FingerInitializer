@@ -19,19 +19,15 @@
       <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Шлях до масок: оберіть шлях до масок" wrappingWidth="574.0" />
       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
-            <Menu mnemonicParsing="false" text="Файл">
+            <Menu mnemonicParsing="false" text="Проект">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem mnemonicParsing="false" text="Вказати корінний шлях" />
+                  <MenuItem mnemonicParsing="false" text="Вказати шлях до масок" />
                </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Налаштування">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
           <Menu mnemonicParsing="false" text="Допомога">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" text="Про програму" />
             </items>
           </Menu>
         </menus>

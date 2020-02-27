@@ -480,8 +480,6 @@ public class Controller {
                 writer.setColor(x, y, Color.BLACK);
             }
         }
-        System.out.println("posX="+ imgPositionX+" : posY="+imgPositionY);
-        System.out.println("width="+width+" : height="+height);
         for(int i=0;i<layers.size();i++) {
             PixelReader layer = layers.get(i).getPixelReader();
             for (int x = 0; x < width; x++) {
