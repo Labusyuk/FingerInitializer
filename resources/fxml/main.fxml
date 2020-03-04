@@ -12,22 +12,22 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="400.0" maxWidth="750.0" minHeight="450.0" minWidth="750.0" prefHeight="400.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="400.0" maxWidth="750.0" minHeight="450.0" minWidth="750.0" prefHeight="400.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8.0.211" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
    <children>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#49ffe4" height="25.0" layoutY="425.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-10.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1ffbff" height="25.0" layoutY="25.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Шлях до масок: оберіть шлях до масок" wrappingWidth="574.0" />
+      <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вихідний шлях: оберіть директорію" wrappingWidth="574.0" />
       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
             <Menu mnemonicParsing="false" text="Проект">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Вказати корінний шлях" />
-                  <MenuItem mnemonicParsing="false" text="Вказати шлях до масок" />
+                  <MenuItem fx:id="menuBarChangeRootPath" mnemonicParsing="false" text="Вказати корінний шлях"/>
+                  <MenuItem fx:id="menuBarChangeMaskPath" mnemonicParsing="false" text="Вказати вихідний шлях" />
                </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Допомога">
             <items>
-              <MenuItem mnemonicParsing="false" text="Про програму" />
+              <MenuItem fx:id="menuBarChangeHelp" mnemonicParsing="false" text="Про програму" />
             </items>
           </Menu>
         </menus>

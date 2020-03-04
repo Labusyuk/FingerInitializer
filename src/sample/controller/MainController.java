@@ -1,4 +1,4 @@
-package sample;
+package sample.controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -8,26 +8,28 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.control.ContextMenu;
+import sample.Main;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,12 +41,18 @@ import java.util.Comparator;
 import java.util.List;
 
 
-public class Controller {
+public class MainController {
     private String rootPath, maskPath;
     private static Image image;
     private static int layerCounter = 0;
     private static List<WritableImage> layers = new ArrayList<>();
     private static List<WritableImage> visibleLayers = new ArrayList<>();
+    @FXML
+    MenuItem menuBarChangeRootPath;
+    @FXML
+    MenuItem menuBarChangeMaskPath;
+    @FXML
+    MenuItem menuBarChangeHelp;
     @FXML
     Canvas canvasLayers;
     @FXML
@@ -68,6 +76,10 @@ public class Controller {
     Button saveFragment;
     @FXML
     Button save;
+    @FXML
+    ImageView cyberSecurityImg;
+    @FXML
+    ImageView cyberPoliceImg;
 
     @FXML
     public void initialize() {
@@ -121,12 +133,51 @@ public class Controller {
                 activateDeactivateControlls(false);
             }
         });
+        menuBarChangeRootPath.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                chooseRoot(event);
+            }
+        });
+        menuBarChangeMaskPath.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                chooseMaskRoot(event);
+            }
+        });
+        menuBarChangeHelp.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Parent root = null;
+                try {
+                    root = FXMLLoader.load(getClass().getResource("/fxml/help.fxml"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
+                Scene secondScene = new Scene(root, 600, 400);
+
+                // New window (Stage)
+                Stage newWindow = new Stage();
+                newWindow.setTitle("Про програму");
+                newWindow.setScene(secondScene);
+
+                // Set position of second window, related to primary window.
+
+                newWindow.show();
+            }
+        });
     }
 
     public void chooseRoot(ActionEvent actionEvent) {
-        Node source = (Node) actionEvent.getSource();
-        Window theStage = source.getScene().getWindow();
+        Window theStage = null;
+        if(actionEvent.getSource() instanceof Node) {
+            Node source = (Node) actionEvent.getSource();
+            theStage = source.getScene().getWindow();
+        }else if(actionEvent.getSource() instanceof MenuItem){
+            ContextMenu contextMenu = ((MenuItem)(actionEvent.getSource())).getParentPopup();
+            theStage = contextMenu.getScene().getWindow();
+        }
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File directory = directoryChooser.showDialog(theStage);
         if (directory != null) {
@@ -148,8 +199,14 @@ public class Controller {
     }
 
     public void chooseMaskRoot(ActionEvent actionEvent) {
-        Node source = (Node) actionEvent.getSource();
-        Window theStage = source.getScene().getWindow();
+        Window theStage = null;
+        if(actionEvent.getSource() instanceof Node) {
+            Node source = (Node) actionEvent.getSource();
+            theStage = source.getScene().getWindow();
+        }else if(actionEvent.getSource() instanceof MenuItem){
+            ContextMenu contextMenu = ((MenuItem)(actionEvent.getSource())).getParentPopup();
+            theStage = contextMenu.getScene().getWindow();
+        }
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File directory = directoryChooser.showDialog(theStage);
         if (directory != null) {
@@ -250,15 +307,6 @@ public class Controller {
         activateDeactivateControlls(true);
     }
 
-    public void drawLayer(ActionEvent ae) {
-/*        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.clearRect(0,0,canvas.getWidth(),canvas.getHeight());
-        for(WritableImage writableImage:layers)
-            gc.drawImage(writableImage,0,0);*/
-        System.out.println("X=" + (canvas.getWidth() - paneCanvas.getWidth()) * paneCanvas.getHvalue() + " Y=" + (canvas.getHeight() - paneCanvas.getHeight()) * paneCanvas.getVvalue());
-        System.out.println(canvas.getWidth() + " : " + paneCanvas.getWidth() + " " + paneCanvas.getHvalue());
-
-    }
 
     public void CanvasPaintMousePressed(MouseEvent mouseEvent) {
         tempCanvas.setWidth(canvas.getWidth());
@@ -319,7 +367,6 @@ public class Controller {
                     redrawCanvasMap();
                 }
             });
-            System.out.println(selectedItem);
             contextMenu.show(theStage, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }
@@ -343,7 +390,6 @@ public class Controller {
 
             int padding = (canvasLayerSize - imageLayerHeight) / 2;
             for (int i = 0; i < layerCounter; i++) {
-                System.out.println(" :" + padding);
                 canvasLayers.getGraphicsContext2D().drawImage(this.image, 0, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
                 canvasLayers.getGraphicsContext2D().drawImage(layers.get(i), 0, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
                 canvasLayers.getGraphicsContext2D().strokeRoundRect(0, 0 + i * canvasLayerSize, canvasLayerSize, canvasLayerSize, 10, 10);
@@ -379,13 +425,11 @@ public class Controller {
 
     public void saveMaskandStep(ActionEvent ae) {
         save(ae);
-        String selectedItems = "";
         ObservableList<String> selected = listViewFileList.getSelectionModel().getSelectedItems();
-        System.out.println(selected.get(0));
         int selectedIndex = listViewFileList.getItems().indexOf(selected.get(0));
         if (selectedIndex + 1 < listViewFileList.getItems().size())
             listViewFileList.getSelectionModel().select(listViewFileList.getItems().get(listViewFileList.getItems().indexOf(selected.get(0)) + 1));
-//        System.out.println(listViewFileList.getItems().get(listViewFileList.getItems().indexOf(selected.get(0))+1));
+
     }
 
     public void save(ActionEvent ae) {
