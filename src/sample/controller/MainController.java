@@ -275,7 +275,7 @@ public class MainController {
         redrawCanvasMap();
 /*        GraphicsContext gcLayers = canvasLayers.getGraphicsContext2D();
         WritableImage imageLayer = canvas.snapshot(null,null);*/
-        int canvasLayersWidth = (int) canvasLayers.getWidth();
+/*        int canvasLayersWidth = (int) canvasLayers.getWidth();
         Dimension canvasLayerDimension = new Dimension(0, 0);
         if (image.getWidth() > canvasLayersWidth) {
             double k = image.getWidth() / (canvasLayersWidth);
@@ -283,7 +283,7 @@ public class MainController {
         } else if (image.getHeight() > canvasLayersWidth) {
             double k = image.getHeight() / (canvasLayersWidth);
             canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-        }
+        }*/
         WritableImage tempImage = new WritableImage((int) tempCanvas.getWidth(), (int) tempCanvas.getHeight());
         tempImage = tempCanvas.snapshot(null, tempImage);
         PixelReader maskReader = tempImage.getPixelReader();
@@ -376,22 +376,25 @@ public class MainController {
         if (layerCounter > 0) {
             int canvasLayersWidth = (int) canvasLayers.getWidth();
             Dimension canvasLayerDimension = new Dimension(0, 0);
-            if (image.getWidth() > canvasLayersWidth) {
-                double k = image.getWidth() / (canvasLayersWidth);
+            double k;
+            if (image.getWidth() > canvasLayersWidth && image.getWidth()>image.getHeight()) {
+                k = image.getWidth() / (canvasLayersWidth);
                 canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-            } else if (image.getHeight() > canvasLayersWidth) {
-                double k = image.getHeight() / (canvasLayersWidth);
+            }else{
+                k = image.getHeight() / (canvasLayersWidth);
                 canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
             }
+
 
             int canvasLayerSize = (int) canvasLayers.getWidth(); // SQUERE
             int imageLayerHeight = (int) canvasLayerDimension.getHeight();
             canvasLayers.setHeight(layerCounter * canvasLayerSize);
 
             int padding = (canvasLayerSize - imageLayerHeight) / 2;
+            int paddingX = (int)((image.getWidth() / k)<canvasLayerSize?(canvasLayerSize-(image.getWidth() / k))/2:0);
             for (int i = 0; i < layerCounter; i++) {
-                canvasLayers.getGraphicsContext2D().drawImage(this.image, 0, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
-                canvasLayers.getGraphicsContext2D().drawImage(layers.get(i), 0, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
+                canvasLayers.getGraphicsContext2D().drawImage(this.image, paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
+                canvasLayers.getGraphicsContext2D().drawImage(layers.get(i), paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
                 canvasLayers.getGraphicsContext2D().strokeRoundRect(0, 0 + i * canvasLayerSize, canvasLayerSize, canvasLayerSize, 10, 10);
             }
         }
