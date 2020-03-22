@@ -271,19 +271,7 @@ public class MainController {
     }
 
     public void canvasPaintMouseReleased(MouseEvent me) {
-        WritableImage image = canvas.snapshot(null, null);
         redrawCanvasMap();
-/*        GraphicsContext gcLayers = canvasLayers.getGraphicsContext2D();
-        WritableImage imageLayer = canvas.snapshot(null,null);*/
-/*        int canvasLayersWidth = (int) canvasLayers.getWidth();
-        Dimension canvasLayerDimension = new Dimension(0, 0);
-        if (image.getWidth() > canvasLayersWidth) {
-            double k = image.getWidth() / (canvasLayersWidth);
-            canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-        } else if (image.getHeight() > canvasLayersWidth) {
-            double k = image.getHeight() / (canvasLayersWidth);
-            canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-        }*/
         WritableImage tempImage = new WritableImage((int) tempCanvas.getWidth(), (int) tempCanvas.getHeight());
         tempImage = tempCanvas.snapshot(null, tempImage);
         PixelReader maskReader = tempImage.getPixelReader();
