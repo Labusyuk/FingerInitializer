@@ -30,6 +30,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.control.ContextMenu;
 import sample.Main;
+import sample.entity.Layer;
+import sample.modules.Layers;
+import sample.modules.Map;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,9 +47,8 @@ import java.util.List;
 public class MainController {
     private String rootPath, maskPath;
     private static Image image;
-    private static int layerCounter = 0;
-    private static List<WritableImage> layers = new ArrayList<>();
-    private static List<WritableImage> visibleLayers = new ArrayList<>();
+    private Map map;
+    private Layers layers;
     @FXML
     MenuItem menuBarChangeRootPath;
     @FXML
@@ -83,6 +85,8 @@ public class MainController {
 
     @FXML
     public void initialize() {
+        map = new Map(canvasMap, canvas);
+        layers = new Layers(canvasLayers,tempCanvas,image);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(3L);
@@ -104,18 +108,6 @@ public class MainController {
                     selectedItems += item + " ";
                 }
                 image = new Image("file:///" + rootPath + "\\" + selectedItems);
-                GraphicsContext gcCanvasMap = canvasMap.getGraphicsContext2D();
-                gcCanvasMap.setFill(Color.BLACK);
-                gcCanvasMap.fillRect(0, 0, gcCanvasMap.getCanvas().getWidth(), gcCanvasMap.getCanvas().getHeight());
-                Dimension canvasMapDimension = new Dimension(0, 0);
-                if (image.getWidth() > gcCanvasMap.getCanvas().getWidth()) {
-                    double k = image.getWidth() / (gcCanvasMap.getCanvas().getWidth());
-                    canvasMapDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-                } else if (image.getHeight() > gcCanvasMap.getCanvas().getHeight()) {
-                    double k = image.getHeight() / (gcCanvasMap.getCanvas().getHeight());
-                    canvasMapDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-                }
-                gcCanvasMap.drawImage(image, (gcCanvasMap.getCanvas().getWidth() - canvasMapDimension.getWidth()) / 2 + 1, (gcCanvasMap.getCanvas().getHeight() - canvasMapDimension.getHeight()) / 2 + 1, canvasMapDimension.getWidth() - 2, canvasMapDimension.getHeight() - 2);
 
                 GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -124,12 +116,11 @@ public class MainController {
                 gc.setFill(Color.BLACK);
                 gc.fillRect(0, 0, image.getWidth(), image.getHeight());
                 gc.drawImage(image, 0, 0, image.getWidth(), image.getHeight());
+                map.update();
                 canvasLayers.setHeight(100);
                 canvasLayers.getGraphicsContext2D().clearRect(0, 0, 100, 100);
-                layerCounter = 0;
                 tempCanvas.getGraphicsContext2D().clearRect(0, 0, tempCanvas.getWidth(), tempCanvas.getHeight());
                 layers.clear();
-                visibleLayers.clear();
                 activateDeactivateControlls(false);
             }
         });
@@ -249,29 +240,10 @@ public class MainController {
         gc.setStroke(Color.WHITE);
         gc.setFill(Color.WHITE);
         gc.fillOval(me.getX() - sizeStroke / 2, me.getY() - sizeStroke / 2, sizeStroke, sizeStroke);
-        /*
-        WritableImage srcImage = new WritableImage((int) tempCanvas.getWidth(), (int) tempCanvas.getHeight());
-        srcImage = tempCanvas.snapshot(null, srcImage);
-        PixelReader maskReader = srcImage.getPixelReader();
-        int width = (int)tempCanvas.getWidth();
-        int height = (int)tempCanvas.getHeight();
-        WritableImage dest = new WritableImage(width, height);
-        PixelWriter writer = dest.getPixelWriter();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                Color maskColor = maskReader.getColor(x, y);
-                if (!maskColor.equals(Color.WHITE)) {
-                    writer.setColor(x, y, maskColor);
-                }
-
-            }
-        }
-        canvas.getGraphicsContext2D().drawImage(dest,0,0);
-        */
     }
 
     public void canvasPaintMouseReleased(MouseEvent me) {
-        redrawCanvasMap();
+        map.update();
         WritableImage tempImage = new WritableImage((int) tempCanvas.getWidth(), (int) tempCanvas.getHeight());
         tempImage = tempCanvas.snapshot(null, tempImage);
         PixelReader maskReader = tempImage.getPixelReader();
@@ -287,11 +259,9 @@ public class MainController {
                 }
             }
         }
-        layers.add(dest);
-        visibleLayers.add(dest);
-        layerCounter++;
+        layers.addLayer(new Layer(dest,true));
         tempCanvas.getGraphicsContext2D().clearRect(0, 0, tempCanvas.getWidth(), tempCanvas.getHeight());
-        redrawCanvasLayers();
+        layers.update();
         activateDeactivateControlls(true);
     }
 
@@ -321,7 +291,7 @@ public class MainController {
                 separatorMenuItem, removeItem);
 
         // When user right-click on Circle
-        if (mouseEvent.getButton() == MouseButton.SECONDARY && layerCounter > 0 && mouseEvent.getY() > 0 && mouseEvent.getY() < (canvasLayers.getWidth() + layerCounter * canvasLayers.getWidth())) {
+        if (mouseEvent.getButton() == MouseButton.SECONDARY && layers.getCountLayers() > 0 && mouseEvent.getY() > 0 && mouseEvent.getY() < (canvasLayers.getWidth() + layers.getCountLayers() * canvasLayers.getWidth())) {
             selectedItem++;
             Node source = (Node) mouseEvent.getSource();
             Window theStage = source.getScene().getWindow();
@@ -330,63 +300,34 @@ public class MainController {
                 clickedPosition -= canvasLayers.getWidth();
                 selectedItem++;
             }
-            if (visibleLayers.contains(layers.get(selectedItem)))
+            if (layers.isVisible(selectedItem))
                 showMenuItem.setSelected(true);
             int finalSelectedItem = selectedItem;
             removeItem.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    visibleLayers.remove(layers.remove(finalSelectedItem));
-                    layerCounter--;
-                    redrawCanvasLayers();
+                    layers.removeLayer(finalSelectedItem);
+                    layers.update();
                     redrawCanvas();
-                    redrawCanvasMap();
+                    map.update();
                     if(layers.isEmpty())activateDeactivateControlls(false);
                 }
             });
             showMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    if (visibleLayers.contains(layers.get(finalSelectedItem)))
-                        visibleLayers.remove(layers.get(finalSelectedItem));
+                    if (layers.isVisible(finalSelectedItem))
+                        layers.getLayer(finalSelectedItem).setVisible(false);
                     else
-                        visibleLayers.add(layers.get(finalSelectedItem));
+                        layers.getLayer(finalSelectedItem).setVisible(true);
                     redrawCanvas();
-                    redrawCanvasMap();
+                    map.update();
                 }
             });
             contextMenu.show(theStage, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }
 
-    public void redrawCanvasLayers() {
-        canvasLayers.getGraphicsContext2D().clearRect(0, 0, canvasLayers.getWidth(), canvasLayers.getHeight());
-        if (layerCounter > 0) {
-            int canvasLayersWidth = (int) canvasLayers.getWidth();
-            Dimension canvasLayerDimension = new Dimension(0, 0);
-            double k;
-            if (image.getWidth() > canvasLayersWidth && image.getWidth()>image.getHeight()) {
-                k = image.getWidth() / (canvasLayersWidth);
-                canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-            }else{
-                k = image.getHeight() / (canvasLayersWidth);
-                canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-            }
-
-
-            int canvasLayerSize = (int) canvasLayers.getWidth(); // SQUERE
-            int imageLayerHeight = (int) canvasLayerDimension.getHeight();
-            canvasLayers.setHeight(layerCounter * canvasLayerSize);
-
-            int padding = (canvasLayerSize - imageLayerHeight) / 2;
-            int paddingX = (int)((image.getWidth() / k)<canvasLayerSize?(canvasLayerSize-(image.getWidth() / k))/2:0);
-            for (int i = 0; i < layerCounter; i++) {
-                canvasLayers.getGraphicsContext2D().drawImage(this.image, paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
-                canvasLayers.getGraphicsContext2D().drawImage(layers.get(i), paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
-                canvasLayers.getGraphicsContext2D().strokeRoundRect(0, 0 + i * canvasLayerSize, canvasLayerSize, canvasLayerSize, 10, 10);
-            }
-        }
-    }
 
     public void redrawCanvas() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -394,24 +335,11 @@ public class MainController {
         canvas.setWidth(this.image.getWidth());
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(this.image, 0, 0, canvas.getWidth(), canvas.getHeight());
-        for (int i = 0; i < visibleLayers.size(); i++) {
-            gc.drawImage(visibleLayers.get(i), 0, 0);
+        for (int i = 0; i < layers.getCountLayers(); i++) {
+            Layer layer = layers.getLayer(i);
+            if(layer.isVisible())
+            gc.drawImage(layer.getImage(), 0, 0);
         }
-    }
-
-    public void redrawCanvasMap() {
-        WritableImage image = canvas.snapshot(null, null);
-        GraphicsContext gc = canvasMap.getGraphicsContext2D();
-        Dimension canvasMapDimension = new Dimension(0, 0);
-        if (image.getWidth() > gc.getCanvas().getWidth()) {
-            double k = image.getWidth() / (gc.getCanvas().getWidth());
-            canvasMapDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-        } else if (image.getHeight() > gc.getCanvas().getHeight()) {
-            double k = image.getHeight() / (gc.getCanvas().getHeight());
-            canvasMapDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-
-        }
-        gc.drawImage(image, (gc.getCanvas().getWidth() - canvasMapDimension.getWidth()) / 2 + 1, (gc.getCanvas().getHeight() - canvasMapDimension.getHeight()) / 2 + 1, canvasMapDimension.getWidth() - 2, canvasMapDimension.getHeight() - 2);
     }
 
     public void saveMaskandStep(ActionEvent ae) {
@@ -440,8 +368,8 @@ public class MainController {
                     writer.setColor(x, y, Color.BLACK);
             }
         }
-        for(int i=0;i<layers.size();i++) {
-            PixelReader layer = layers.get(i).getPixelReader();
+        for(int i=0;i<layers.getCountLayers();i++) {
+            PixelReader layer = layers.getLayer(i).getImage().getPixelReader();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     Color maskColor = layer.getColor(x, y);
@@ -515,8 +443,8 @@ public class MainController {
                 writer.setColor(x, y, Color.BLACK);
             }
         }
-        for(int i=0;i<layers.size();i++) {
-            PixelReader layer = layers.get(i).getPixelReader();
+        for(int i=0;i<layers.getCountLayers();i++) {
+            PixelReader layer = layers.getLayer(i).getImage().getPixelReader();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     Color maskColor = layer.getColor(imgPositionX+x, imgPositionY+y);
