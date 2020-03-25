@@ -11,10 +11,13 @@ import sample.entity.Layer;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 @Data
-public class Layers {
+public class Layers{
 
     private static List<Layer> layers = new ArrayList<>();
     private Canvas canvasLayers, tempCanvas;
@@ -24,6 +27,8 @@ public class Layers {
         this.canvasLayers = canvasLayers;
         this.tempCanvas = tempCanvas;
         this.image = image;
+        canvasLayers.setHeight(100);
+        canvasLayers.getGraphicsContext2D().clearRect(0, 0, 100, 100);
     }
 
     public int getCountLayers(){
@@ -58,6 +63,7 @@ public class Layers {
 
     public void clear(){
         layers.clear();
+        canvasLayers.getGraphicsContext2D().clearRect(0, 0, canvasLayers.getWidth(), canvasLayers.getHeight());
     }
 
     public boolean isEmpty(){
@@ -80,6 +86,8 @@ public class Layers {
     }
     public void update(){
         GraphicsContext gc = canvasLayers.getGraphicsContext2D();
+        canvasLayers.getGraphicsContext2D().clearRect(0, 0, canvasLayers.getWidth(), canvasLayers.getHeight());
+
         WritableImage snapshot = tempCanvas.snapshot(null, null);
         Dimension canvasLayerDimension = getImageDimenshion(snapshot);
 
@@ -95,5 +103,13 @@ public class Layers {
             gc.strokeRoundRect(0, 0 + i * canvasLayerSize, canvasLayerSize, canvasLayerSize, 10, 10);
         }
 
+    }
+
+    public static List<Layer> getLayers() {
+        return layers;
+    }
+
+    public static void setLayers(List<Layer> layers) {
+        Layers.layers = layers;
     }
 }

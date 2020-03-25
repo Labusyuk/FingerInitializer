@@ -5,40 +5,73 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import lombok.Data;
 import sample.entity.Layer;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Data
 public class MyCanvas implements EventSubscriber{
     private Canvas canvas;
     private Image image;
     private Color colorFill = Color.WHITE; ///Color.BLACK
     private Color colorStroke = Color.BLACK; ///Color.WHITE
-    private static List<Layer> layers = new ArrayList<>();
-    private Dimension workingDimension = new Dimension(1000,1000);
+    private Layers layers;
+    private Dimension workPlaceDimension = new Dimension(1000,1000);
+    Dimension dimension = new Dimension();
+    private static double koef=100;
 
-    private Dimension getImageDimenshion(){
+    public MyCanvas(Canvas canvas, Image image, Layers layers){
+        this.canvas = canvas;
+        this.image = image;
+        this.layers = layers;
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        Dimension dimension = new Dimension(0, 0);
-        if (image.getWidth() > workingDimension.getWidth() && image.getWidth()>image.getHeight()) {
-            double k = image.getWidth() / (workingDimension.getWidth());
-            dimension.setSize(image.getWidth() / k, image.getHeight() / k);
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(3L);
+        gc.strokeRoundRect(0, 0, canvas.getWidth(), canvas.getHeight(), 25, 25);
+    }
+
+    public void setImage(Image image){
+        this.image = image;
+        getImageDimenshion();
+//        System.out.println("image w="+image.getWidth()+" h="+image.getHeight());
+//        System.out.println("dimension w="+dimension.getWidth()+" h="+dimension.getHeight());
+        canvas.setWidth(dimension.getWidth());
+        canvas.setHeight(dimension.getHeight());
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.BLACK);
+        gc.fillRect(0, 0, dimension.getWidth(), dimension.getHeight());
+        gc.drawImage(image, 0, 0, dimension.getWidth(), dimension.getHeight());
+    }
+
+    private void getImageDimenshion(){
+        if (image.getWidth() > workPlaceDimension.getWidth() && image.getWidth()>image.getHeight()) {
+            koef = image.getWidth() / (workPlaceDimension.getWidth());
         } else {
-            double k = image.getHeight() / (workingDimension.getHeight());
-            dimension.setSize(image.getWidth() / k, image.getHeight() / k);
+            koef = image.getHeight() / (workPlaceDimension.getHeight());
         }
-        return dimension;
+        if(image.getWidth() < workPlaceDimension.getWidth() && image.getHeight() < workPlaceDimension.getHeight())
+            dimension.setSize(image.getWidth(),image.getHeight());
+        else
+        dimension.setSize(image.getWidth() / koef, image.getHeight() / koef);
     }
-    public void update(){
+
+    public void update() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        Dimension imageDimension = getImageDimenshion();
-        gc.setFill(colorFill);
-        gc.setStroke(colorStroke);
-        gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        gc.strokeRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        gc.drawImage(image, (gc.getCanvas().getWidth() - imageDimension.getWidth()) / 2 + 1, (gc.getCanvas().getHeight() - imageDimension.getHeight()) / 2 + 1, imageDimension.getWidth() - 2, imageDimension.getHeight() - 2);
+        canvas.setHeight(dimension.getHeight());
+        canvas.setWidth(dimension.getWidth());
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(this.image, 0, 0, canvas.getWidth(), canvas.getHeight());
+        for (Layer layer : layers.getLayers()) {
+            if (layer.isVisible())
+                gc.drawImage(layer.getImage(), 0, 0);
+        }
     }
+
+    public double getKoefSize(){
+        return koef;
+    }
+
 }

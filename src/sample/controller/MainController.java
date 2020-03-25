@@ -33,12 +33,18 @@ import sample.Main;
 import sample.entity.Layer;
 import sample.modules.Layers;
 import sample.modules.Map;
+import sample.modules.MyCanvas;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -47,8 +53,12 @@ import java.util.List;
 public class MainController {
     private String rootPath, maskPath;
     private static Image image;
+    private String selectedItems;
     private Map map;
     private Layers layers;
+    private MyCanvas myCanvas;
+    private Dimension maxImageDimension;
+    private double koef;
     @FXML
     MenuItem menuBarChangeRootPath;
     @FXML
@@ -59,6 +69,8 @@ public class MainController {
     Canvas canvasLayers;
     @FXML
     Slider sliderStroke;
+    @FXML
+    Slider sliderImageSize;
     @FXML
     ScrollPane paneCanvas;
     @FXML
@@ -71,6 +83,8 @@ public class MainController {
     @FXML
     Text textMaskPath;
     @FXML
+    Text textSize;
+    @FXML
     ListView<String> listViewFileList;
     @FXML
     Button saveAndNext;
@@ -78,20 +92,12 @@ public class MainController {
     Button saveFragment;
     @FXML
     Button save;
-    @FXML
-    ImageView cyberSecurityImg;
-    @FXML
-    ImageView cyberPoliceImg;
 
     @FXML
     public void initialize() {
         map = new Map(canvasMap, canvas);
         layers = new Layers(canvasLayers,tempCanvas,image);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(3L);
-        gc.strokeRoundRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight(), 25, 25);
-
+        myCanvas = new MyCanvas(canvas,image,layers);
         MultipleSelectionModel<String> langsSelectionModel = listViewFileList.getSelectionModel();
         langsSelectionModel.setSelectionMode(SelectionMode.MULTIPLE);
         sliderStroke.setMax(200);
@@ -102,23 +108,16 @@ public class MainController {
         // устанавливаем слушатель для отслеживания изменений
         langsSelectionModel.selectedItemProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue<? extends String> changed, String oldValue, String newValue) {
-                String selectedItems = "";
+                selectedItems = "";
                 ObservableList<String> selected = langsSelectionModel.getSelectedItems();
                 for (String item : selected) {
-                    selectedItems += item + " ";
+                    selectedItems += item;
                 }
                 image = new Image("file:///" + rootPath + "\\" + selectedItems);
-
-                GraphicsContext gc = canvas.getGraphicsContext2D();
-
-                canvas.setWidth(image.getWidth());
-                canvas.setHeight(image.getHeight());
-                gc.setFill(Color.BLACK);
-                gc.fillRect(0, 0, image.getWidth(), image.getHeight());
-                gc.drawImage(image, 0, 0, image.getWidth(), image.getHeight());
+                myCanvas.setImage(image);
+                layers.setImage(image);
                 map.update();
-                canvasLayers.setHeight(100);
-                canvasLayers.getGraphicsContext2D().clearRect(0, 0, 100, 100);
+                textSize.setText("k="+myCanvas.getKoefSize());
                 tempCanvas.getGraphicsContext2D().clearRect(0, 0, tempCanvas.getWidth(), tempCanvas.getHeight());
                 layers.clear();
                 activateDeactivateControlls(false);
@@ -147,13 +146,9 @@ public class MainController {
                 }
 
                 Scene secondScene = new Scene(root, 600, 400);
-
-                // New window (Stage)
                 Stage newWindow = new Stage();
                 newWindow.setTitle("Про програму");
                 newWindow.setScene(secondScene);
-
-                // Set position of second window, related to primary window.
 
                 newWindow.show();
             }
@@ -208,7 +203,7 @@ public class MainController {
 
     public String getExtensionByStringHandling(String filename) {
         int index = filename.indexOf('.');
-        String extension = index == -1 ? null : filename.substring(index);
+        String extension = index == -1 ? null : filename.substring(index).toLowerCase();
         return extension;
     }
 
@@ -308,7 +303,7 @@ public class MainController {
                 public void handle(ActionEvent event) {
                     layers.removeLayer(finalSelectedItem);
                     layers.update();
-                    redrawCanvas();
+                    myCanvas.update();
                     map.update();
                     if(layers.isEmpty())activateDeactivateControlls(false);
                 }
@@ -320,7 +315,7 @@ public class MainController {
                         layers.getLayer(finalSelectedItem).setVisible(false);
                     else
                         layers.getLayer(finalSelectedItem).setVisible(true);
-                    redrawCanvas();
+                    myCanvas.update();
                     map.update();
                 }
             });
@@ -328,19 +323,6 @@ public class MainController {
         }
     }
 
-
-    public void redrawCanvas() {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        canvas.setHeight(this.image.getHeight());
-        canvas.setWidth(this.image.getWidth());
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(this.image, 0, 0, canvas.getWidth(), canvas.getHeight());
-        for (int i = 0; i < layers.getCountLayers(); i++) {
-            Layer layer = layers.getLayer(i);
-            if(layer.isVisible())
-            gc.drawImage(layer.getImage(), 0, 0);
-        }
-    }
 
     public void saveMaskandStep(ActionEvent ae) {
         save(ae);
@@ -359,8 +341,8 @@ public class MainController {
         new File(maskPath.toString()+"\\mask").mkdir();
         Long maxLong = maxNumberLongName(maskPath.toString()+"\\img");
         maxLong++;
-        int width = (int) image.getWidth();
-        int height = (int) image.getHeight();
+        int width = (int) myCanvas.getDimension().getWidth();
+        int height = (int) myCanvas.getDimension().getHeight();
         WritableImage saveImage = new WritableImage(width, height);
         PixelWriter writer = saveImage.getPixelWriter();
         for (int x = 0; x < width; x++) {
@@ -368,6 +350,7 @@ public class MainController {
                     writer.setColor(x, y, Color.BLACK);
             }
         }
+
         for(int i=0;i<layers.getCountLayers();i++) {
             PixelReader layer = layers.getLayer(i).getImage().getPixelReader();
             for (int x = 0; x < width; x++) {
@@ -379,22 +362,33 @@ public class MainController {
                 }
             }
         }
+        BufferedImage maskImage = SwingFXUtils.fromFXImage(saveImage, null);
+        BufferedImage newMaskImage = new BufferedImage((int)image.getWidth(),(int)image.getHeight(),BufferedImage.TYPE_INT_ARGB);
+        newMaskImage.createGraphics().drawImage(maskImage,0,0,(int)image.getWidth(),(int)image.getHeight(),null);
+        //RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
 
-        RenderedImage maskImage = SwingFXUtils.fromFXImage(saveImage, null);
-        RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
-        try {
-            ImageIO.write(mainImage, "png", new File(maskPath.toString() + "\\img\\" + maxLong+".png"));
+       try {
+           System.out.println(selectedItems);
+           System.out.println(getExtensionByStringHandling(selectedItems));
+//            Path originalPath = new File(rootPath.toString() + "\\" + selectedItems).toPath();
+//            Path copied = new File(maskPath.toString() + "\\img\\" + maxLong+getExtensionByStringHandling(selectedItems)).toPath();
+//            Files.copy(originalPath, copied, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println(rootPath+"\\"+selectedItems);
+            BufferedImage main = ImageIO.read(new File(rootPath + "\\" + selectedItems));
+            ImageIO.write(main, "jpg", new File(maskPath.toString() + "\\img\\" + maxLong+".jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            ImageIO.write(maskImage, "png", new File(maskPath.toString() + "\\mask\\" + maxLong+".png"));
+            ImageIO.write(newMaskImage, "png", new File(maskPath.toString() + "\\mask\\" + maxLong+".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
     private void activateDeactivateControlls(boolean enable){
-        saveFragment.setDisable(!enable);
+        //saveFragment.setDisable(!enable);
         saveAndNext.setDisable(!enable);
         save.setDisable(!enable);
     }
@@ -427,8 +421,6 @@ public class MainController {
 
         int widthP = (int) paneCanvas.getWidth();
         int heightP = (int) paneCanvas.getHeight();
-        int widthC = (int) canvas.getWidth();
-        int heightC = (int) canvas.getHeight();
         int widthI = (int) image.getWidth();
         int heightI = (int) image.getHeight();
         int width = widthI<widthP?widthI:widthP;
@@ -436,6 +428,8 @@ public class MainController {
 
         int imgPositionX = (int) ((canvas.getWidth() - width) * paneCanvas.getHvalue());
         int imgPositionY = (int) ((canvas.getHeight() - height) * paneCanvas.getVvalue());
+        int k = myCanvas.getKoefSize()>1?(int)myCanvas.getKoefSize():1;
+
         WritableImage saveImage = new WritableImage(width, height);
         PixelWriter writer = saveImage.getPixelWriter();
         for (int x = 0; x < width; x++) {
@@ -454,7 +448,9 @@ public class MainController {
                 }
             }
         }
-        RenderedImage maskImage = SwingFXUtils.fromFXImage(saveImage, null);
+        BufferedImage maskImage = SwingFXUtils.fromFXImage(saveImage, null);
+        BufferedImage newMaskImage = new BufferedImage((int)(width*k),(int)(height*k),BufferedImage.TYPE_INT_ARGB);
+        newMaskImage.createGraphics().drawImage(maskImage,0,0,(int)(width*k),(int)(height*k),null);
         PixelReader reader = image.getPixelReader();
         WritableImage newImage = new WritableImage(reader, imgPositionX, imgPositionY, width, height);
         RenderedImage mainImage = SwingFXUtils.fromFXImage(newImage, null);

@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main extends Application {
-    public static List<String> format = new ArrayList<>(Arrays.asList(".png",".jpg"));
+    public static List<String> format = new ArrayList<>(Arrays.asList(".png",".jpg",".bmp"));
 
     @Override
     public void start(Stage primaryStage) throws Exception{
