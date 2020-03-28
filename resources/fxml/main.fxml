@@ -2,22 +2,25 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.effect.SepiaTone?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="400.0" maxWidth="750.0" minHeight="450.0" minWidth="750.0" prefHeight="400.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="720.0" prefHeight="400.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#49ffe4" height="25.0" layoutY="425.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-10.0" />
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1ffbff" height="25.0" layoutY="25.0" stroke="BLACK" strokeType="INSIDE" width="760.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Text fx:id="textMaskPath" layoutX="20.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вихідний шлях: оберіть директорію" wrappingWidth="574.0" />
-      <Text fx:id="textSize" layoutX="629.0" layoutY="442.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0%" />
       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
             <Menu mnemonicParsing="false" text="Проект">
@@ -33,39 +36,138 @@
           </Menu>
         </menus>
       </MenuBar>
-      <AnchorPane layoutY="51.0" minWidth="130.0" prefHeight="374.0" prefWidth="133.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="51.0">
-         <children>
-            <Canvas fx:id="canvasMap" height="133.0" width="133.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <ListView fx:id="listViewFileList" layoutY="120.0" prefHeight="240.0" prefWidth="133.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="134.0" />
-         </children></AnchorPane>
-      <Text fx:id="textRootPath" layoutX="20.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Корінний шлях: оберіть директорію" wrappingWidth="476.33984375" />
-      <ScrollPane fx:id="paneCanvas" layoutX="134.0" layoutY="97.0" prefHeight="328.0" prefWidth="512.0" AnchorPane.leftAnchor="134.0" AnchorPane.rightAnchor="104.0">
-        <content>
-            <AnchorPane>
+      <BorderPane layoutY="25.0" prefHeight="200.0" prefWidth="495.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+         <top>
+            <ToolBar prefHeight="40.0" prefWidth="822.0" BorderPane.alignment="CENTER">
+              <items>
+                  <Slider />
+                  <Separator orientation="VERTICAL" prefHeight="30.0" />
+                  <ToggleButton disable="true" mnemonicParsing="false" text="Виділити" />
+                  <Button disable="true" mnemonicParsing="false" text="Зберегти виділене" />
+                  <Button disable="true" mnemonicParsing="false" text="Зберегти видиме" />
+                  <Separator orientation="VERTICAL" prefHeight="30.0" />
+                  <Button disable="true" mnemonicParsing="false" text="Зберегти" />
+                  <Button disable="true" mnemonicParsing="false" text="Зберегти та далі" />
+                <Button disable="true" mnemonicParsing="false" text="Далі" />
+                  <Separator orientation="VERTICAL" prefHeight="30.0" />
+              </items>
+            </ToolBar>
+         </top>
+         <center>
+            <ScrollPane fx:id="paneCanvas" prefHeight="415.0" prefWidth="462.0" BorderPane.alignment="CENTER">
+              <content>
+                  <AnchorPane>
+                     <children>
+                        <Slider disable="true" orientation="VERTICAL" prefHeight="100.0" prefWidth="14.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                        <Canvas fx:id="canvas" disable="true" height="415.0" layoutY="-7.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="471.0" AnchorPane.rightAnchor="86.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
+         </center>
+         <left>
+            <BorderPane BorderPane.alignment="CENTER">
+               <center>
+                  <ScrollPane prefHeight="415.0">
+                    <content>
+                      <AnchorPane>
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <TitledPane animated="false" text="Черга для обробки">
+                                      <content>
+                                        <AnchorPane maxWidth="180.0" minHeight="0.0" minWidth="0.0">
+                                             <children>
+                                                <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </TitledPane>
+                                    <TitledPane animated="false" expanded="false" text="Оброблені">
+                                      <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <ListView />
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </TitledPane>
+                                    <TitledPane animated="false" expanded="false" text="Помилка">
+                                      <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </TitledPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </ScrollPane>
+               </center>
+               <top>
+                  <AnchorPane BorderPane.alignment="CENTER">
+                     <children>
+                        <Canvas height="150.0" width="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </top>
+            </BorderPane>
+         </left>
+         <right>
+            <AnchorPane prefHeight="268.0" prefWidth="150.0" BorderPane.alignment="CENTER">
                <children>
-                  <Canvas fx:id="canvas" disable="true" height="643.0" layoutX="14.0" layoutY="1.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="584.0" AnchorPane.rightAnchor="-14.0" />
+                  <ScrollPane layoutX="7.0" prefHeight="200.0" prefWidth="146.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                    </content>
+                  </ScrollPane>
                </children>
             </AnchorPane>
-        </content>
-      </ScrollPane>
-      <Button layoutX="666.0" layoutY="26.0" minHeight="22.0" mnemonicParsing="false" onAction="#chooseRoot" prefHeight="22.0" prefWidth="94.0" text="Змінити" />
-      <Button fx:id="buttonChangeMaskRoot" layoutX="666.0" layoutY="425.0" minHeight="23.0" mnemonicParsing="false" onAction="#chooseMaskRoot" prefHeight="23.0" prefWidth="94.0" text="Змінити" />
-      <AnchorPane layoutX="133.0" layoutY="51.0" prefHeight="46.0" prefWidth="616.0" AnchorPane.leftAnchor="133.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
-         <children>
-            <Slider fx:id="sliderStroke" layoutY="7.0" showTickLabels="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="477.0" AnchorPane.topAnchor="7.0" />
-            <Button fx:id="saveAndNext" disable="true" layoutX="458.0" layoutY="5.0" mnemonicParsing="false" onAction="#saveMaskandStep" prefHeight="33.0" prefWidth="159.0" text="Зберегти та перейти далі" />
-            <Button fx:id="saveFragment" disable="true" layoutX="160.0" layoutY="5.0" mnemonicParsing="false" onAction="#saveFragment" prefHeight="33.0" prefWidth="220.0" text="Зберегти маску видимого фрагменту" />
-            <Button fx:id="save" disable="true" layoutX="382.0" layoutY="5.0" mnemonicParsing="false" onAction="#save" prefHeight="33.0" prefWidth="74.0" text="Зберегти" />
-         </children>
-      </AnchorPane>
-      <ScrollPane layoutX="646.0" layoutY="97.0" prefHeight="328.0" prefWidth="103.0" AnchorPane.rightAnchor="0.0">
-        <content>
-          <AnchorPane>
-               <children>
-                  <Canvas fx:id="canvasLayers" height="450.0" onMouseClicked="#CanvasLayersOnMouseClicked" width="87.0" AnchorPane.rightAnchor="0.0" />
-               </children>
-            </AnchorPane>
-        </content>
-      </ScrollPane>
+         </right>
+         <bottom>
+            <BorderPane BorderPane.alignment="CENTER">
+               <top>
+                  <ToolBar prefHeight="11.0" prefWidth="720.0" BorderPane.alignment="CENTER">
+                     <items>
+                        <Label text="K=8.0" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label text="100%" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label text="X,Y" />
+                     </items>
+                  </ToolBar>
+               </top>
+               <bottom>
+                  <ToolBar BorderPane.alignment="CENTER">
+                     <items>
+                        <ButtonBar blendMode="MULTIPLY" cache="true" prefHeight="30.0" prefWidth="302.0">
+                           <effect>
+                              <SepiaTone />
+                           </effect>
+                           <buttons>
+                              <Label fx:id="labelInputPath1" prefHeight="17.0" text="Корінний шлях: оберіть директорію" />
+                              <Button maxWidth="70.0" mnemonicParsing="false" text="Змінити" />
+                           </buttons>
+                        </ButtonBar>
+                        <Separator orientation="VERTICAL" prefHeight="30.0" />
+                        <ButtonBar blendMode="MULTIPLY" cache="true" prefHeight="30.0" prefWidth="302.0">
+                           <effect>
+                              <SepiaTone />
+                           </effect>
+                           <buttons>
+                              <Label fx:id="labelOutputPath1" prefHeight="17.0" text="Корінний шлях: оберіть директорію" />
+                              <Button maxWidth="70.0" mnemonicParsing="false" text="Змінити" />
+                           </buttons>
+                        </ButtonBar>
+                     </items>
+                  </ToolBar>
+               </bottom>
+            </BorderPane>
+         </bottom>
+      </BorderPane>
    </children>
 </AnchorPane>
