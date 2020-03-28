@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.*;
@@ -59,6 +60,12 @@ public class MainController {
     private MyCanvas myCanvas;
     private Dimension maxImageDimension;
     private double koef;
+    @FXML
+    Label labelInputPath;
+    @FXML
+    Label labelOutputPath;
+    @FXML
+    ListView<String> indputList;
 //    @FXML
 //    MenuItem menuBarChangeRootPath;
 //    @FXML
@@ -99,11 +106,54 @@ public class MainController {
 
     }
 
-    public void chooseRoot(ActionEvent actionEvent) {
-
+    public void chooseRootPath(MouseEvent mouseEvent) {
+        Window theStage = null;
+        if(mouseEvent.getSource() instanceof Node) {
+            Node source = (Node) mouseEvent.getSource();
+            theStage = source.getScene().getWindow();
+        }else if(mouseEvent.getSource() instanceof MenuItem){
+            ContextMenu contextMenu = ((MenuItem)(mouseEvent.getSource())).getParentPopup();
+            theStage = contextMenu.getScene().getWindow();
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Оберіть корінний шлях");
+        File directory = directoryChooser.showDialog(theStage);
+        if (directory != null) {
+            List<String> fileList = new ArrayList<>();
+            fileList.sort(Comparator.naturalOrder());
+            rootPath = directory.toString();
+            labelInputPath.setText("" + rootPath);
+            File[] files = directory.listFiles();
+            for (File file : files)
+                if (file.isFile() && Main.format.contains(getExtensionByStringHandling(file.getName()))) {
+                    fileList.add(file.getName());
+                    System.out.println(file.getName());
+                }
+            indputList.setEditable(false);
+            indputList.setItems(FXCollections.observableList(fileList));
+            if (0 < indputList.getItems().size()) {
+                indputList.getSelectionModel().select(0);
+//                canvas.setDisable(false);
+            }
+        }
     }
 
-    public void chooseMaskRoot(ActionEvent actionEvent) {
+    public void chooseOutputPath(MouseEvent mouseEvent) {
+        Window theStage = null;
+        if(mouseEvent.getSource() instanceof Node) {
+            Node source = (Node) mouseEvent.getSource();
+            theStage = source.getScene().getWindow();
+        }else if(mouseEvent.getSource() instanceof MenuItem){
+            ContextMenu contextMenu = ((MenuItem)(mouseEvent.getSource())).getParentPopup();
+            theStage = contextMenu.getScene().getWindow();
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Оберіть вихідний шлях");
+        File directory = directoryChooser.showDialog(theStage);
+        if (directory != null) {
+            maskPath = directory.toString();
+            labelOutputPath.setText("" + maskPath);
+        }
     }
 
     public String getExtensionByStringHandling(String filename) {
