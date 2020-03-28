@@ -1,6 +1,8 @@
 package sample.modules;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -42,6 +44,8 @@ public class Map implements EventSubscriber {
     }
     public void update(){
         GraphicsContext gc = canvasMap.getGraphicsContext2D();
+//        SnapshotParameters snapshotParameters = new SnapshotParameters();
+//        snapshotParameters.setViewport(new Rectangle2D(0,0,canvas.getWidth(),canvas.getHeight()));
         WritableImage snapshot = canvas.snapshot(null, null);
         Dimension imageDimension = getImageDimenshion(snapshot);
         gc.setFill(colorFill);

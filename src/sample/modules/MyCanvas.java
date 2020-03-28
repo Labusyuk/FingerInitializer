@@ -20,7 +20,7 @@ public class MyCanvas implements EventSubscriber{
     private Color colorStroke = Color.BLACK; ///Color.WHITE
     private Layers layers;
     private Dimension workPlaceDimension = new Dimension(1000,1000);
-    Dimension dimension = new Dimension();
+    private Dimension dimension = new Dimension();
     private static double koef=100;
 
     public MyCanvas(Canvas canvas, Image image, Layers layers){
@@ -43,11 +43,15 @@ public class MyCanvas implements EventSubscriber{
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, dimension.getWidth(), dimension.getHeight());
+        System.out.println(dimension.getWidth()+" +"+dimension.getHeight());
+        System.out.println("color"+image.getPixelReader().getColor(0,0));
         gc.drawImage(image, 0, 0, dimension.getWidth(), dimension.getHeight());
+        System.out.println("12");
     }
 
     private void getImageDimenshion(){
-        if (image.getWidth() > workPlaceDimension.getWidth() && image.getWidth()>image.getHeight()) {
+        System.out.println("----\n"+image.getWidth()+" : "+image.getHeight());
+        if(image.getWidth() > workPlaceDimension.getWidth() && image.getWidth()>image.getHeight()) {
             koef = image.getWidth() / (workPlaceDimension.getWidth());
         } else {
             koef = image.getHeight() / (workPlaceDimension.getHeight());
@@ -55,7 +59,7 @@ public class MyCanvas implements EventSubscriber{
         if(image.getWidth() < workPlaceDimension.getWidth() && image.getHeight() < workPlaceDimension.getHeight())
             dimension.setSize(image.getWidth(),image.getHeight());
         else
-        dimension.setSize(image.getWidth() / koef, image.getHeight() / koef);
+        dimension.setSize(image.getWidth() / (float)koef, image.getHeight() / (float)koef);
     }
 
     public void update() {
