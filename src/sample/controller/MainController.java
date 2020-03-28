@@ -51,7 +51,48 @@ import java.util.List;
 
 
 public class MainController {
-    private St
+    private String rootPath, maskPath;
+    private static Image image;
+    private String selectedItems;
+    private Map map;
+    private Layers layers;
+    private MyCanvas myCanvas;
+    private Dimension maxImageDimension;
+    private double koef;
+//    @FXML
+//    MenuItem menuBarChangeRootPath;
+//    @FXML
+//    MenuItem menuBarChangeMaskPath;
+//    @FXML
+//    MenuItem menuBarChangeHelp;
+//    @FXML
+//    Canvas canvasLayers;
+//    @FXML
+//    Slider sliderStroke;
+//    @FXML
+//    Slider sliderImageSize;
+//    @FXML
+//    ScrollPane paneCanvas;
+//    @FXML
+//    Canvas canvas;
+//    @FXML
+//    Canvas canvasMap;
+//    Canvas tempCanvas = new Canvas(100, 100);
+//    @FXML
+//    Text textRootPath;
+//    @FXML
+//    Text textMaskPath;
+//    @FXML
+//    Text textSize;
+//    @FXML
+//    ListView<String> listViewFileList;
+//    @FXML
+//    Button saveAndNext;
+//    @FXML
+//    Button saveFragment;
+//    @FXML
+//    Button save;
+
 
     @FXML
     public void initialize() {
