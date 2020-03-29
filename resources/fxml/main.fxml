@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="900.0" minWidth="720.0" prefHeight="400.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400.0" minWidth="720.0" prefHeight="400.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.MainController">
    <children>
       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -55,23 +55,27 @@
             </ToolBar>
          </top>
          <center>
-            <ScrollPane fx:id="paneCanvas" prefHeight="415.0" prefWidth="462.0" BorderPane.alignment="CENTER">
-              <content>
-                  <AnchorPane>
-                     <children>
-                        <Slider disable="true" orientation="VERTICAL" prefHeight="100.0" prefWidth="14.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                        <Canvas fx:id="canvas" disable="true" height="415.0" layoutY="-7.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="471.0" AnchorPane.rightAnchor="86.0" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </ScrollPane>
+            <AnchorPane BorderPane.alignment="CENTER">
+               <children>
+                  <ScrollPane fx:id="paneCanvas" prefHeight="415.0" prefWidth="462.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <content>
+                        <AnchorPane>
+                           <children>
+                              <Canvas fx:id="canvas" disable="true" height="415.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="471.0" AnchorPane.rightAnchor="86.0" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </ScrollPane>
+                  <Slider orientation="VERTICAL" prefHeight="100.0" prefWidth="14.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+               </children>
+            </AnchorPane>
          </center>
          <left>
             <BorderPane BorderPane.alignment="CENTER">
                <top>
                   <AnchorPane BorderPane.alignment="CENTER">
                      <children>
-                        <Canvas height="150.0" width="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Canvas fx:id="canvasMap" height="150.0" width="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
                </top>
@@ -81,11 +85,11 @@
                <center>
                   <Accordion prefHeight="618.0" prefWidth="11.0" BorderPane.alignment="CENTER">
                     <panes>
-                      <TitledPane animated="false" text="Черга">
+                      <TitledPane text="Черга">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="indputList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <ListView fx:id="inputList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                         </content>
@@ -102,7 +106,7 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane animated="false" expanded="false" text="Помилка">
+                      <TitledPane text="Помилка">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -121,7 +125,10 @@
                <children>
                   <ScrollPane layoutX="7.0" prefHeight="200.0" prefWidth="146.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                      <AnchorPane>
+                           <children>
+                              <Canvas fx:id="canvasLayers" height="200.0" width="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children></AnchorPane>
                     </content>
                   </ScrollPane>
                </children>
@@ -132,15 +139,15 @@
                <top>
                   <ToolBar BorderPane.alignment="CENTER">
                      <items>
-                        <Label text="IMG_20200220_152413.jpg" />
+                        <Label fx:id="labelCurrentImage" text="Поточне зображення" />
                         <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label text="5/44" />
+                        <Label fx:id="labelCurrentNum" text="n/m" />
                         <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label text="K=8.0" />
+                        <Label fx:id="labelFirstKoef" text="K=8.0" />
                         <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
                         <Label text="100%" />
                         <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label text="X,Y" />
+                        <Label fx:id="labelResolution" text="X,Y" />
                      </items>
                   </ToolBar>
                </top>

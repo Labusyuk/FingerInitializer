@@ -50,8 +50,8 @@ public class Map implements EventSubscriber {
         Dimension imageDimension = getImageDimenshion(snapshot);
         gc.setFill(colorFill);
         gc.fillRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        gc.setStroke(colorStroke);
-        gc.strokeRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+//        gc.setStroke(colorStroke);
+//        gc.strokeRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         gc.drawImage(snapshot, (gc.getCanvas().getWidth() - imageDimension.getWidth()) / 2 + 1, (gc.getCanvas().getHeight() - imageDimension.getHeight()) / 2 + 1, imageDimension.getWidth() - 2, imageDimension.getHeight() - 2);
     }
 }

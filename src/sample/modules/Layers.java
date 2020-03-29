@@ -23,12 +23,8 @@ public class Layers{
     private Canvas canvasLayers, tempCanvas;
     private Image image;
 
-    public Layers(Canvas canvasLayers, Canvas tempCanvas, Image image) {
+    public Layers(Canvas canvasLayers) {
         this.canvasLayers = canvasLayers;
-        this.tempCanvas = tempCanvas;
-        this.image = image;
-        canvasLayers.setHeight(100);
-        canvasLayers.getGraphicsContext2D().clearRect(0, 0, 100, 100);
     }
 
     public int getCountLayers(){
