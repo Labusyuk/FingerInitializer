@@ -49,7 +49,7 @@
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
                   <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" text="Зберегти" />
                   <Button fx:id="buttonSaveAndNext" disable="true" mnemonicParsing="false" text="Зберегти та далі" />
-                <Button fx:id="buttonNext" disable="true" mnemonicParsing="false" text="#Далі" />
+                <Button fx:id="buttonNext" disable="true" mnemonicParsing="false" onMouseClicked="#canvasNextMouseClicked" text="#Далі" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
               </items>
             </ToolBar>
@@ -61,7 +61,7 @@
                     <content>
                         <AnchorPane>
                            <children>
-                              <Canvas fx:id="canvas" height="415.0" onMouseDragged="#canvasMouseDragged" onMouseMoved="#canvasMouseMoved" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseReleased" width="471.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                              <Canvas fx:id="canvas" disable="true" height="415.0" onMouseDragged="#canvasMouseDragged" onMouseMoved="#canvasMouseMoved" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseReleased" width="471.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                            </children>
                         </AnchorPane>
                     </content>

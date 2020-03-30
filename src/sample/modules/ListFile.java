@@ -29,12 +29,14 @@ public class ListFile {
     private String selectedItem;
     Label labelListInputNM;
     Label labelListErrorN;
+    Label labelCurrentNum;
 
-    public ListFile(MainControllerUpdate mainControllerUpdate, ListView<String> inputList, ListView<String> errorList, Label labelListInputNM, Label labelListErrorN) {
+    public ListFile(MainControllerUpdate mainControllerUpdate, ListView<String> inputList, ListView<String> errorList, Label labelListInputNM, Label labelListErrorN,Label labelCurrentNum) {
         this.inputList = inputList;
         this.errorList = errorList;
         this.labelListInputNM = labelListInputNM;
         this.labelListErrorN = labelListErrorN;
+        this.labelCurrentNum = labelCurrentNum;
         multipleSelectionModel = inputList.getSelectionModel();
         inputList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         multipleSelectionModel.selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -43,6 +45,7 @@ public class ListFile {
                 ObservableList<String> selected = multipleSelectionModel.getSelectedItems();
                 int selectedIndex = inputList.getSelectionModel().getSelectedIndex();
                 labelListInputNM.setText(""+ (selectedIndex>=0?selectedIndex+1:0)+"/"+inputList.getItems().size());
+                labelCurrentNum.setText(""+ (selectedIndex>=0?selectedIndex+1:0)+"/"+inputList.getItems().size());
                 for (String item : selected) {
                     selectedItems += item;
                 }

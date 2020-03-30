@@ -143,7 +143,7 @@ public class MainController implements MainControllerUpdate {
     @FXML
     public void initialize() {
         System.out.println(  inputList.toString());
-        listFile = new ListFile(this, inputList, errorList, labelListInputNM, labelListErrorN);
+        listFile = new ListFile(this, inputList, errorList, labelListInputNM, labelListErrorN, labelCurrentNum);
         layers = new Layers(canvasLayers, tempCanvas);
         myCanvas = new MyCanvas(canvas, tempCanvas, paneCanvas,layers, sliderStroke);
         map = new Map(canvasMap,canvas);
@@ -187,6 +187,7 @@ public class MainController implements MainControllerUpdate {
             }
         }while (false);
         myCanvas.setImage(image);
+        canvas.setDisable(false);
         map.update();
         layers.clear();
         setAccessibility(false);
@@ -346,7 +347,10 @@ public class MainController implements MainControllerUpdate {
                     myCanvas.update();
                     map.update();
                     layers.update();
-                    if(layers.isEmpty())setAccessibility(false);
+                    if(layers.isEmpty()) {
+                        setAccessibility(false);
+                        buttonSelection.setSelected(false);
+                    }
                 }
             });
             showMenuItem.setOnAction(new EventHandler<ActionEvent>() {
