@@ -1,5 +1,6 @@
 package sample.modules;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.SnapshotParameters;
@@ -7,11 +8,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.Data;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 @Data
 public class Map implements EventSubscriber {
@@ -19,6 +22,7 @@ public class Map implements EventSubscriber {
     private Image image;
     private Color colorFill = Color.BLACK; ///Color.BLACK
     private Color colorStroke = Color.BLACK; ///Color.WHITE
+
 
     public Map(Canvas canvasMap, Canvas canvas){
         this.canvasMap = canvasMap;
@@ -42,6 +46,7 @@ public class Map implements EventSubscriber {
         }
         return dimension;
     }
+
     public void update(){
         GraphicsContext gc = canvasMap.getGraphicsContext2D();
 //        SnapshotParameters snapshotParameters = new SnapshotParameters();
@@ -54,4 +59,5 @@ public class Map implements EventSubscriber {
 //        gc.strokeRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         gc.drawImage(snapshot, (gc.getCanvas().getWidth() - imageDimension.getWidth()) / 2 + 1, (gc.getCanvas().getHeight() - imageDimension.getHeight()) / 2 + 1, imageDimension.getWidth() - 2, imageDimension.getHeight() - 2);
     }
+
 }

@@ -22,9 +22,11 @@ public class Layers{
     private static List<Layer> layers = new ArrayList<>();
     private Canvas canvasLayers, tempCanvas;
     private Image image;
+    private Dimension layerDimension = new Dimension();
 
-    public Layers(Canvas canvasLayers) {
+    public Layers(Canvas canvasLayers, Canvas tempCanvas) {
         this.canvasLayers = canvasLayers;
+        this.tempCanvas = tempCanvas;
     }
 
     public int getCountLayers(){
@@ -68,18 +70,18 @@ public class Layers{
 
     private Dimension getImageDimenshion(Image snapshot){
         GraphicsContext gc = canvasLayers.getGraphicsContext2D();
-        int canvasLayersWidth = (int) canvasLayers.getWidth();
-        Dimension canvasLayerDimension = new Dimension(0, 0);
-        double k;
-        if (image.getWidth() > canvasLayersWidth && image.getWidth()>image.getHeight()) {
-            k = image.getWidth() / (canvasLayersWidth);
-            canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
-        }else{
-            k = image.getHeight() / (canvasLayersWidth);
-            canvasLayerDimension.setSize(image.getWidth() / k, image.getHeight() / k);
+        Dimension dimension = new Dimension(0, 0);
+        if (snapshot.getWidth() > gc.getCanvas().getWidth() && snapshot.getWidth()>snapshot.getHeight()) {
+            double k = snapshot.getWidth() / (gc.getCanvas().getWidth());
+            dimension.setSize(snapshot.getWidth() / k, snapshot.getHeight() / k);
+        } else {
+            double k = snapshot.getHeight() / (gc.getCanvas().getWidth());
+            dimension.setSize(snapshot.getWidth() / k, snapshot.getHeight() / k);
         }
-        return canvasLayerDimension;
+        layerDimension = dimension;
+        return dimension;
     }
+
     public void update(){
         GraphicsContext gc = canvasLayers.getGraphicsContext2D();
         canvasLayers.getGraphicsContext2D().clearRect(0, 0, canvasLayers.getWidth(), canvasLayers.getHeight());
@@ -87,16 +89,12 @@ public class Layers{
         WritableImage snapshot = tempCanvas.snapshot(null, null);
         Dimension canvasLayerDimension = getImageDimenshion(snapshot);
 
-        int canvasLayerSize = (int) canvasLayers.getWidth(); // SQUERE
-        int imageLayerHeight = (int) canvasLayerDimension.getHeight();
-        canvasLayers.setHeight(getCountLayers() * canvasLayerSize);
+        canvasLayers.setHeight(getCountLayers() * canvasLayerDimension.getHeight());
 
-        int padding = (canvasLayerSize - imageLayerHeight) / 2;
-        int paddingX = (int)(canvasLayerDimension.getWidth()<canvasLayerSize?(canvasLayerSize-canvasLayerDimension.getWidth())/2:0);
         for (int i = 0; i < getCountLayers(); i++) {
-            gc.drawImage(this.image, paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
-            gc.drawImage(getLayer(i).getImage(), paddingX, padding + i * canvasLayerSize, canvasLayerDimension.getWidth(), imageLayerHeight);
-            gc.strokeRoundRect(0, 0 + i * canvasLayerSize, canvasLayerSize, canvasLayerSize, 10, 10);
+            gc.drawImage(this.image, (canvasLayers.getWidth()-canvasLayerDimension.getWidth())/2 +1, i*canvasLayerDimension.getHeight(), canvasLayerDimension.getWidth()-2, canvasLayerDimension.getHeight()-2);
+            gc.drawImage(getLayer(i).getImage(), (canvasLayers.getWidth()-canvasLayerDimension.getWidth())/2 +1, i*canvasLayerDimension.getHeight(), canvasLayerDimension.getWidth()-2, canvasLayerDimension.getHeight()-2);
+            gc.strokeRoundRect((canvasLayers.getWidth()-canvasLayerDimension.getWidth())/2 +1, i*canvasLayerDimension.getHeight(), canvasLayerDimension.getWidth()-2, canvasLayerDimension.getHeight()-2, 10, 10);
         }
 
     }
@@ -108,4 +106,6 @@ public class Layers{
     public static void setLayers(List<Layer> layers) {
         Layers.layers = layers;
     }
+
+
 }

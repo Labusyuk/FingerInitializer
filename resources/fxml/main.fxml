@@ -26,13 +26,13 @@
         <menus>
             <Menu mnemonicParsing="false" text="Проект">
                <items>
-                  <MenuItem fx:id="menuBarChangeRootPath" mnemonicParsing="false" text="Вказати корінний шлях" />
-                  <MenuItem fx:id="menuBarChangeMaskPath" mnemonicParsing="false" text="Вказати вихідний шлях" />
+                  <MenuItem fx:id="menuBarChangeRootPath" mnemonicParsing="false" onAction="#chooseRootPath" text="Вказати корінний шлях" />
+                  <MenuItem fx:id="menuBarChangeMaskPath" mnemonicParsing="false" onAction="#chooseOutputPath" text="Вказати вихідний шлях" />
                </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Допомога">
             <items>
-              <MenuItem fx:id="menuBarChangeHelp" mnemonicParsing="false" text="Про програму" />
+              <MenuItem fx:id="menuBarChangeHelp" mnemonicParsing="false" onAction="#showHelpWindow" text="Про програму" />
             </items>
           </Menu>
         </menus>
@@ -41,15 +41,15 @@
          <top>
             <ToolBar prefHeight="40.0" prefWidth="822.0" BorderPane.alignment="CENTER">
               <items>
-                  <Slider />
+                  <Slider fx:id="sliderStroke" value="40.0" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
-                  <ToggleButton disable="true" mnemonicParsing="false" text="Виділити" />
-                  <Button disable="true" mnemonicParsing="false" text="Зберегти виділене" />
-                  <Button disable="true" mnemonicParsing="false" text="Зберегти видиме" />
+                  <ToggleButton fx:id="buttonSelection" disable="true" mnemonicParsing="false" onMouseClicked="#canvasUpdate" text="Виділити" />
+                  <Button fx:id="buttonSaveSelection" disable="true" mnemonicParsing="false" text="Зберегти виділене" />
+                  <Button fx:id="buttonSaveVisible" disable="true" mnemonicParsing="false" text="Зберегти видиме" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
-                  <Button disable="true" mnemonicParsing="false" text="Зберегти" />
-                  <Button disable="true" mnemonicParsing="false" text="Зберегти та далі" />
-                <Button disable="true" mnemonicParsing="false" text="#Далі" />
+                  <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" text="Зберегти" />
+                  <Button fx:id="buttonSaveAndNext" disable="true" mnemonicParsing="false" text="Зберегти та далі" />
+                <Button fx:id="buttonNext" disable="true" mnemonicParsing="false" text="#Далі" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
               </items>
             </ToolBar>
@@ -61,12 +61,12 @@
                     <content>
                         <AnchorPane>
                            <children>
-                              <Canvas fx:id="canvas" disable="true" height="415.0" onMouseDragged="#canvasPaint" onMousePressed="#CanvasPaintMousePressed" onMouseReleased="#canvasPaintMouseReleased" width="471.0" AnchorPane.rightAnchor="86.0" />
+                              <Canvas fx:id="canvas" height="415.0" onMouseDragged="#canvasMouseDragged" onMouseMoved="#canvasMouseMoved" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseReleased" width="471.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                            </children>
                         </AnchorPane>
                     </content>
                   </ScrollPane>
-                  <Slider orientation="VERTICAL" prefHeight="100.0" prefWidth="14.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <Slider fx:id="sliderImageSize" min="1.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="14.0" value="1.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                </children>
             </AnchorPane>
          </center>
@@ -94,10 +94,13 @@
                               </AnchorPane>
                         </content>
                            <graphic>
-                              <Button contentDisplay="RIGHT" mnemonicParsing="false" text="#Далі" />
+                              <Button fx:id="canvasNextMouseClicked" contentDisplay="RIGHT" mnemonicParsing="false" onMouseClicked="#canvasNextMouseClicked" text="Далі">
+                                 <graphic>
+                                    <Label fx:id="labelListInputNM" />
+                                 </graphic></Button>
                            </graphic>
                       </TitledPane>
-                      <TitledPane animated="false" expanded="false" text="Оброблені">
+                      <TitledPane expanded="false" text="Оброблені">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -106,14 +109,20 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane text="Помилка">
+                      <TitledPane expanded="false" text="Помилка">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <ListView fx:id="errorList" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                         </content>
+                           <graphic>
+                              <Button fx:id="moveErrorFile" mnemonicParsing="false" onMouseClicked="#moveErrorFile" text="Fix">
+                                 <graphic>
+                                    <Label fx:id="labelListErrorN" contentDisplay="RIGHT" text="0" textFill="RED" />
+                                 </graphic></Button>
+                           </graphic>
                       </TitledPane>
                     </panes>
                   </Accordion>
@@ -121,13 +130,13 @@
             </BorderPane>
          </left>
          <right>
-            <AnchorPane prefHeight="268.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="268.0" prefWidth="50.0" BorderPane.alignment="CENTER">
                <children>
-                  <ScrollPane layoutX="7.0" prefHeight="200.0" prefWidth="146.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ScrollPane layoutX="7.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <content>
                       <AnchorPane>
                            <children>
-                              <Canvas fx:id="canvasLayers" height="200.0" width="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Canvas fx:id="canvasLayers" height="200.0" onMouseClicked="#canvasLayersOnMouseClicked" width="150.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="0.0" />
                            </children></AnchorPane>
                     </content>
                   </ScrollPane>
@@ -148,6 +157,8 @@
                         <Label text="100%" />
                         <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
                         <Label fx:id="labelResolution" text="X,Y" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelXY" text="X,Y" />
                      </items>
                   </ToolBar>
                </top>
