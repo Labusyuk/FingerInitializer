@@ -402,14 +402,8 @@ public class MainController implements MainControllerUpdate {
         }
 
         RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
-
-
         try {
-            ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img\\" + maxLong+".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
+            ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img\\" + maxLong+".jpg"));
             ImageIO.write(saveImage, "png", new File(outputPath.toString() + "\\mask\\" + maxLong+".png"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -438,6 +432,52 @@ public class MainController implements MainControllerUpdate {
             }
         }
         return maxLong;
+    }
+
+    @FXML
+    public void saveSelectedFragment(MouseEvent me){
+        Rectangle selectedRectangle = myCanvas.getSelectionRectangle();
+        if(selectedRectangle.getWidth()==0 || selectedRectangle.getHeight() ==0)
+            return;
+        double k = myCanvas.getKoefSize();
+        Rectangle newSelectedRectangle = new Rectangle((int)(selectedRectangle.getX()*k),(int)(selectedRectangle.getY()*k),(int)(selectedRectangle.getWidth()*k),(int)(selectedRectangle.getHeight()*k));
+        if(outputPath==null)chooseOutputPath(me);
+        if (outputPath==null)return;
+        File directory = new File(outputPath.toString());
+        new File(outputPath.toString()+"\\img-p").mkdir();
+        new File(outputPath.toString()+"\\mask-p").mkdir();
+        Long maxLong = maxNumberLongName(outputPath.toString()+"\\img-p");
+        maxLong++;
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        BufferedImage saveImage = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = saveImage.createGraphics();
+        graphics2D.setColor(java.awt.Color.BLACK);
+        graphics2D.fill(newSelectedRectangle);
+        graphics2D.dispose();
+        for(int i=0;i<layers.getCountLayers();i++) {
+            Layer layer = layers.getLayer(i);
+            if(layer.isVisible()) {
+                BufferedImage bufferedLayer = getScaledRGBInstance(layer.getImage(),(int)image.getWidth(),(int)image.getHeight());
+                for (int x = (int)newSelectedRectangle.getX(); x < newSelectedRectangle.getWidth(); x++) {
+                    for (int y = (int)newSelectedRectangle.getY(); y < newSelectedRectangle.getHeight(); y++) {
+                        java.awt.Color maskColor = new java.awt.Color(bufferedLayer.getRGB(x,y));
+                        if (maskColor.getRGB()==java.awt.Color.WHITE.getRGB()) {
+                            saveImage.setRGB(x,y,java.awt.Color.WHITE.getRGB());
+                        }
+                    }
+                }
+            }
+        }
+
+        RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
+        try {
+            ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img-p\\" + maxLong+".jpg"));
+            ImageIO.write(saveImage, "png", new File(outputPath.toString() + "\\mask-p\\" + maxLong+".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void saveFragment(ActionEvent ae) {
