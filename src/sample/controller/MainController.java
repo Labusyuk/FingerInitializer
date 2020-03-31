@@ -40,6 +40,7 @@ import sun.awt.image.ToolkitImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -308,6 +309,7 @@ public class MainController implements MainControllerUpdate {
             setAccessibility(true);
         }else
             myCanvas.selectionReleased(mouseEvent);
+            buttonSaveSelection.setDisable(false);
     }
 
     public void canvasLayersOnMouseClicked(MouseEvent mouseEvent) {
@@ -368,7 +370,56 @@ public class MainController implements MainControllerUpdate {
         }
     }
 
-    public void save(ActionEvent ae) {
+    @FXML
+    public void save(MouseEvent me) {
+        if(outputPath==null)chooseOutputPath(me);
+        if (outputPath==null)return;
+        File directory = new File(outputPath.toString());
+        new File(outputPath.toString()+"\\img").mkdir();
+        new File(outputPath.toString()+"\\mask").mkdir();
+        Long maxLong = maxNumberLongName(outputPath.toString()+"\\img");
+        maxLong++;
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        BufferedImage saveImage = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = saveImage.createGraphics();
+        graphics2D.setColor(java.awt.Color.BLACK);
+        graphics2D.fill(new Rectangle(0,0,width,height));
+        graphics2D.dispose();
+        for(int i=0;i<layers.getCountLayers();i++) {
+            Layer layer = layers.getLayer(i);
+            if(layer.isVisible()) {
+                BufferedImage bufferedLayer = getScaledRGBInstance(layer.getImage(),(int)image.getWidth(),(int)image.getHeight());
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        java.awt.Color maskColor = new java.awt.Color(bufferedLayer.getRGB(x,y));
+                        if (maskColor.getRGB()==java.awt.Color.WHITE.getRGB()) {
+                            saveImage.setRGB(x,y,java.awt.Color.WHITE.getRGB());
+                        }
+                    }
+                }
+            }
+        }
+
+        RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
+
+
+        try {
+            ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img\\" + maxLong+".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            ImageIO.write(saveImage, "png", new File(outputPath.toString() + "\\mask\\" + maxLong+".png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void saveAndNext(MouseEvent me) {
+        save(me);
+        inputList.getSelectionModel().selectNext();
     }
 
 
@@ -413,7 +464,8 @@ public class MainController implements MainControllerUpdate {
 
     public void setAccessibility(boolean visibile){
         buttonSelection.setDisable(!visibile);
-        //buttonSaveSelection.setDisable(!visibile);
+        buttonSelection.setSelected(false);
+        buttonSaveSelection.setDisable(!visibile);
         //buttonSaveVisible.setDisable(!visibile);
         buttonSave.setDisable(!visibile);
         buttonSaveAndNext.setDisable(!visibile);
@@ -429,8 +481,11 @@ public class MainController implements MainControllerUpdate {
     @FXML
     public void canvasUpdate(MouseEvent me){
         if(buttonSelection.isSelected())
-            System.out.println("Is selected");
-        myCanvas.update();
+            buttonSaveSelection.setDisable(false);
+        else {
+            buttonSaveSelection.setDisable(true);
+            myCanvas.update();
+        }
     }
 
     @FXML
@@ -446,6 +501,19 @@ public class MainController implements MainControllerUpdate {
         newWindow.setTitle("Про програму");
         newWindow.setScene(secondScene);
         newWindow.show();
+    }
+
+    static BufferedImage getScaledRGBInstance(Image sourceImg, int targetWidth, int targetHeight) {
+        BufferedImage img = SwingFXUtils.fromFXImage(sourceImg,null);
+        int type = (img.getTransparency() == Transparency.OPAQUE) ?
+                BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+
+            BufferedImage imgTemp = new BufferedImage(targetWidth, targetHeight, type);
+            Graphics2D g2 = imgTemp.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(img, 0, 0, targetWidth, targetHeight, null);
+            g2.dispose();
+        return imgTemp;
     }
 
 }

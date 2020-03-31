@@ -47,7 +47,7 @@
                   <Button fx:id="buttonSaveSelection" disable="true" mnemonicParsing="false" text="Зберегти виділене" />
                   <Button fx:id="buttonSaveVisible" disable="true" mnemonicParsing="false" text="Зберегти видиме" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />
-                  <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" text="Зберегти" />
+                  <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" onMouseClicked="#save" text="Зберегти" />
                   <Button fx:id="buttonSaveAndNext" disable="true" mnemonicParsing="false" text="Зберегти та далі" />
                 <Button fx:id="buttonNext" disable="true" mnemonicParsing="false" onMouseClicked="#canvasNextMouseClicked" text="#Далі" />
                   <Separator orientation="VERTICAL" prefHeight="30.0" />

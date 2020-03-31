@@ -124,6 +124,7 @@ public class MyCanvas implements EventSubscriber{
         gc.setStroke(Color.WHITE);
         gc.setFill(Color.WHITE);
         gc.fillOval(me.getX() - sizeStroke / 2, me.getY() - sizeStroke / 2, sizeStroke, sizeStroke);
+
     }
 
     public void selectionMove(MouseEvent me){
@@ -137,7 +138,6 @@ public class MyCanvas implements EventSubscriber{
         update();
         imageForSelection = canvas.snapshot(null, null);
         selectionRectangle.setLocation((int)me.getX(),(int)me.getY());
-
     }
 
     public void selectionReleased(MouseEvent me){
