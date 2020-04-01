@@ -9,12 +9,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.effect.SepiaTone?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -104,7 +106,7 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <ListView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <TreeView fx:id="treeViewCompleted" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                         </content>
@@ -145,23 +147,6 @@
          </right>
          <bottom>
             <BorderPane BorderPane.alignment="CENTER">
-               <top>
-                  <ToolBar BorderPane.alignment="CENTER">
-                     <items>
-                        <Label fx:id="labelCurrentImage" text="Поточне зображення" />
-                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label fx:id="labelCurrentNum" text="n/m" />
-                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label fx:id="labelFirstKoef" text="K=8.0" />
-                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label text="100%" />
-                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label fx:id="labelResolution" text="X,Y" />
-                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
-                        <Label fx:id="labelXY" text="X,Y" />
-                     </items>
-                  </ToolBar>
-               </top>
                <bottom>
                   <ToolBar BorderPane.alignment="CENTER">
                      <items>
@@ -193,6 +178,25 @@
                      </items>
                   </ToolBar>
                </bottom>
+               <center>
+                  <ToolBar BorderPane.alignment="CENTER">
+                     <items>
+                        <Label fx:id="labelCurrentImage" text="Поточне зображення" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelCurrentNum" text="n/m" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelFirstKoef" text="K=8.0" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelPercentKoef" text="\%" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelResolution" text="X,Y" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <Label fx:id="labelXY" text="X,Y" />
+                        <Separator minWidth="10.0" orientation="VERTICAL" prefHeight="10.0" />
+                        <ProgressBar fx:id="progressBarSaving" blendMode="SRC_ATOP" cache="true" prefWidth="200.0" progress="0.0" />
+                     </items>
+                  </ToolBar>
+               </center>
             </BorderPane>
          </bottom>
       </BorderPane>

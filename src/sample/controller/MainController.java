@@ -53,6 +53,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 
@@ -92,6 +93,8 @@ public class MainController implements MainControllerUpdate {
     @FXML
     Label labelFirstKoef;
     @FXML
+    Label labelPercentKoef;
+    @FXML
     Label labelResolution;
     @FXML
     Label labelXY;
@@ -103,6 +106,9 @@ public class MainController implements MainControllerUpdate {
     ListView<String> inputList;
     @FXML
     ListView<String> errorList;
+    @FXML
+    TreeView treeViewCompleted;
+
     private ListFile listFile;
 
     @FXML
@@ -117,6 +123,8 @@ public class MainController implements MainControllerUpdate {
     Slider sliderStroke;
     @FXML
     Slider sliderImageSize;
+    @FXML
+    ProgressBar progressBarSaving;
     @FXML
     ScrollPane paneCanvas;
     @FXML
@@ -143,7 +151,6 @@ public class MainController implements MainControllerUpdate {
 
     @FXML
     public void initialize() {
-        System.out.println(  inputList.toString());
         listFile = new ListFile(this, inputList, errorList, labelListInputNM, labelListErrorN, labelCurrentNum);
         layers = new Layers(canvasLayers, tempCanvas);
         myCanvas = new MyCanvas(canvas, tempCanvas, paneCanvas,layers, sliderStroke);
@@ -158,7 +165,9 @@ public class MainController implements MainControllerUpdate {
                 if(differenceWidth>0 && differenceHeight>0){
                 myCanvas.setWorkPlaceDimension(new Dimension((int)(myCanvas.getMaxWorkPlaceDimension().getWidth()-(differenceWidth*newValue.doubleValue()/100)),(int)(myCanvas.getMaxWorkPlaceDimension().getHeight()-(differenceHeight*newValue.doubleValue()/100))));
                 myCanvas.resizeUpdate();
-                    labelFirstKoef.setText(""+myCanvas.getKoefSize());
+                buttonSaveSelection.setDisable(true);
+                    labelFirstKoef.setText(""+(float)myCanvas.getKoefSize());
+                    labelPercentKoef.setText(""+100/(float)(myCanvas.getKoefSize())+"%");
                     labelResolution.setText(""+(int)image.getWidth()+"x"+(int)image.getHeight());
                 }
             }
@@ -291,7 +300,6 @@ public class MainController implements MainControllerUpdate {
             PixelReader maskReader = writableImage.getPixelReader();
             int width = (int) tempCanvas.getWidth();
             int height = (int) tempCanvas.getHeight();
-            System.out.println("width=" + width + " height=" + height);
             WritableImage dest = new WritableImage(width, height);
             PixelWriter writer = dest.getPixelWriter();
             for (int x = 0; x < width; x++) {
@@ -374,6 +382,7 @@ public class MainController implements MainControllerUpdate {
     public void save(MouseEvent me) {
         if(outputPath==null)chooseOutputPath(me);
         if (outputPath==null)return;
+        progressBarSaving.setProgress(0.1);
         File directory = new File(outputPath.toString());
         new File(outputPath.toString()+"\\img").mkdir();
         new File(outputPath.toString()+"\\mask").mkdir();
@@ -386,6 +395,8 @@ public class MainController implements MainControllerUpdate {
         graphics2D.setColor(java.awt.Color.BLACK);
         graphics2D.fill(new Rectangle(0,0,width,height));
         graphics2D.dispose();
+        progressBarSaving.setProgress(0.2);
+        float partOfProcces = 0.3f/layers.getCountLayers();
         for(int i=0;i<layers.getCountLayers();i++) {
             Layer layer = layers.getLayer(i);
             if(layer.isVisible()) {
@@ -399,15 +410,19 @@ public class MainController implements MainControllerUpdate {
                     }
                 }
             }
+            progressBarSaving.setProgress(progressBarSaving.getProgress()+partOfProcces);
         }
 
         RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
         try {
+            progressBarSaving.setProgress(0.5);
             ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img\\" + maxLong+".jpg"));
+            progressBarSaving.setProgress(0.9);
             ImageIO.write(saveImage, "png", new File(outputPath.toString() + "\\mask\\" + maxLong+".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        progressBarSaving.setProgress(0);
     }
 
     @FXML
@@ -436,11 +451,14 @@ public class MainController implements MainControllerUpdate {
 
     @FXML
     public void saveSelectedFragment(MouseEvent me){
+        Date startDate = new Date();
         Rectangle selectedRectangle = myCanvas.getSelectionRectangle();
         if(selectedRectangle.getWidth()==0 || selectedRectangle.getHeight() ==0)
             return;
+        progressBarSaving.setProgress(0.1);
         double k = myCanvas.getKoefSize();
         Rectangle newSelectedRectangle = new Rectangle((int)(selectedRectangle.getX()*k),(int)(selectedRectangle.getY()*k),(int)(selectedRectangle.getWidth()*k),(int)(selectedRectangle.getHeight()*k));
+        Rectangle correctRectangle = new Rectangle((int)newSelectedRectangle.getX(),(int)newSelectedRectangle.getY(),(int)(newSelectedRectangle.getWidth()-newSelectedRectangle.getX()),(int)(newSelectedRectangle.getHeight()-newSelectedRectangle.getY()));
         if(outputPath==null)chooseOutputPath(me);
         if (outputPath==null)return;
         File directory = new File(outputPath.toString());
@@ -453,14 +471,16 @@ public class MainController implements MainControllerUpdate {
         BufferedImage saveImage = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = saveImage.createGraphics();
         graphics2D.setColor(java.awt.Color.BLACK);
-        graphics2D.fill(newSelectedRectangle);
+        graphics2D.fill(correctRectangle);
         graphics2D.dispose();
+        progressBarSaving.setProgress(0.2);
+        float partOfProcces = 0.3f/layers.getCountLayers();
         for(int i=0;i<layers.getCountLayers();i++) {
             Layer layer = layers.getLayer(i);
             if(layer.isVisible()) {
                 BufferedImage bufferedLayer = getScaledRGBInstance(layer.getImage(),(int)image.getWidth(),(int)image.getHeight());
-                for (int x = (int)newSelectedRectangle.getX(); x < newSelectedRectangle.getWidth(); x++) {
-                    for (int y = (int)newSelectedRectangle.getY(); y < newSelectedRectangle.getHeight(); y++) {
+                for (int x = (int)correctRectangle.getX(); x < correctRectangle.getX()+correctRectangle.getWidth(); x++) {
+                    for (int y = (int)correctRectangle.getY(); y < correctRectangle.getY()+correctRectangle.getHeight(); y++) {
                         java.awt.Color maskColor = new java.awt.Color(bufferedLayer.getRGB(x,y));
                         if (maskColor.getRGB()==java.awt.Color.WHITE.getRGB()) {
                             saveImage.setRGB(x,y,java.awt.Color.WHITE.getRGB());
@@ -468,15 +488,23 @@ public class MainController implements MainControllerUpdate {
                     }
                 }
             }
+            progressBarSaving.setProgress(progressBarSaving.getProgress()+partOfProcces);
         }
-
-        RenderedImage mainImage = SwingFXUtils.fromFXImage(image, null);
+        Date computedSizeDate = new Date();
         try {
+            BufferedImage mainImage = ImageIO.read(new File(listFile.getUrl()));
+            Date loadMainImageDate = new Date();
+            mainImage = mainImage.getSubimage((int)correctRectangle.getX(),(int)correctRectangle.getY(),(int)correctRectangle.getWidth(),(int)correctRectangle.getHeight());
+            saveImage = saveImage.getSubimage((int)correctRectangle.getX(),(int)correctRectangle.getY(),(int)correctRectangle.getWidth(),(int)correctRectangle.getHeight());
+            progressBarSaving.setProgress(0.5);
             ImageIO.write(mainImage, "jpg", new File(outputPath.toString() + "\\img-p\\" + maxLong+".jpg"));
+            progressBarSaving.setProgress(0.9);
             ImageIO.write(saveImage, "png", new File(outputPath.toString() + "\\mask-p\\" + maxLong+".png"));
+            Date finishDate = new Date();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        progressBarSaving.setProgress(0);
 
     }
 
@@ -505,7 +533,7 @@ public class MainController implements MainControllerUpdate {
     public void setAccessibility(boolean visibile){
         buttonSelection.setDisable(!visibile);
         buttonSelection.setSelected(false);
-        buttonSaveSelection.setDisable(!visibile);
+        buttonSaveSelection.setDisable(false);
         //buttonSaveVisible.setDisable(!visibile);
         buttonSave.setDisable(!visibile);
         buttonSaveAndNext.setDisable(!visibile);

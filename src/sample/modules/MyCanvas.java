@@ -66,7 +66,6 @@ public class MyCanvas implements EventSubscriber{
         try {
             gc.drawImage(image, 0, 0, dimension.getWidth(), dimension.getHeight());
         }catch (NullPointerException e){
-            System.out.println("Помилка завантаження");
             gc.setFont(new Font(20));
             gc.setStroke(Color.WHITE);
             gc.strokeText("Помилка завантаження", 100,100);
@@ -128,10 +127,15 @@ public class MyCanvas implements EventSubscriber{
     }
 
     public void selectionMove(MouseEvent me){
+        int fX = (int)me.getX();
+        int fY = (int)me.getY();
+        int sX = (int)selectionRectangle.getX();
+        int sY = (int)selectionRectangle.getY();
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.drawImage(imageForSelection,selectionRectangle.getX()-2,selectionRectangle.getY()-2,(int)me.getX()-selectionRectangle.getX()+100,(int)me.getY()-selectionRectangle.getY()+100,selectionRectangle.getX()-2,selectionRectangle.getY()-2,(int)me.getX()-selectionRectangle.getX()+100,(int)me.getY()-selectionRectangle.getY()+100);
+        gc.drawImage(imageForSelection,sX-2,sY-2,fX-sX+100,fY-sY+100,sX-2,sY-2,fX-sX+100,fY-sY+100);
         gc.setStroke(Color.RED);
-        gc.strokeRect(selectionRectangle.getX(),selectionRectangle.getY(),(int)me.getX()-selectionRectangle.getX(),(int)me.getY()-selectionRectangle.getY());
+        gc.strokeRect(sX,sY,fX-sX,fY-sY);
     }
 
     public void selectionPressed(MouseEvent me){
