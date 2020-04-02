@@ -27,9 +27,9 @@ public class ListFile {
     private String inputPath = new String();
     private String outputPath = new String();
     private String selectedItem;
-    Label labelListInputNM;
-    Label labelListErrorN;
-    Label labelCurrentNum;
+    private Label labelListInputNM;
+    private Label labelListErrorN;
+    private Label labelCurrentNum;
 
     public ListFile(MainControllerUpdate mainControllerUpdate, ListView<String> inputList, ListView<String> errorList, Label labelListInputNM, Label labelListErrorN,Label labelCurrentNum) {
         this.inputList = inputList;

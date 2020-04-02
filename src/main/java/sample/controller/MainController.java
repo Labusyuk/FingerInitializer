@@ -33,8 +33,10 @@ import javafx.stage.Window;
 import javafx.scene.control.ContextMenu;
 import sample.Main;
 import sample.entity.Layer;
+import sample.entity.Result;
 import sample.listener.MainControllerUpdate;
 import sample.modules.*;
+import sample.modules.Map;
 import sun.awt.image.ToolkitImage;
 
 import javax.imageio.ImageIO;
@@ -51,9 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 
@@ -65,6 +65,7 @@ public class MainController implements MainControllerUpdate {
     private Map map;
     private Layers layers;
     private MyCanvas myCanvas;
+    private TreeViewCompleted mytreeViewCompleted;
     private MyMenuBar myMenuBar;
     private Dimension maxImageDimension;
     private Dimension workPlaceDimension = new Dimension(1000,1000);
@@ -156,6 +157,7 @@ public class MainController implements MainControllerUpdate {
         myCanvas = new MyCanvas(canvas, tempCanvas, paneCanvas,layers, sliderStroke);
         map = new Map(canvasMap,canvas);
         myMenuBar = new MyMenuBar(menuBarChangeRootPath,menuBarChangeMaskPath,menuBarChangeHelp);
+        mytreeViewCompleted = new TreeViewCompleted(treeViewCompleted);
         sliderImageSize.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, //
@@ -422,6 +424,9 @@ public class MainController implements MainControllerUpdate {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Result result = new Result(listFile.getSelectedItem(), new HashSet(Arrays.asList(new sample.entity.Image("" + maxLong+".jpg",0,0,width,height))),null);
+        mytreeViewCompleted.setOutputPath(outputPath);
+        mytreeViewCompleted.addResult(result);
         progressBarSaving.setProgress(0);
     }
 
@@ -504,6 +509,9 @@ public class MainController implements MainControllerUpdate {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Result result = new Result(listFile.getSelectedItem(), null, new HashSet(Arrays.asList(new sample.entity.Image("" + maxLong+".jpg",(int)correctRectangle.getX(),(int)correctRectangle.getY(),(int)correctRectangle.getWidth(),(int)correctRectangle.getHeight()))));
+        mytreeViewCompleted.setOutputPath(outputPath);
+        mytreeViewCompleted.addResult(result);
         progressBarSaving.setProgress(0);
 
     }
